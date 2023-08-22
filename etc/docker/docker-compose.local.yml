@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ../..
+      dockerfile: etc/docker/Dockerfile
+    depends_on:
+      - db
+    restart: unless-stopped
+    volumes:
+      - ../..:/app
+    env_file: ../../.env
+    ports:
+      - ${PORT}:${PORT}
+  
+  db:
+    container_name: sqlserver
+    # https://hub.docker.com/_/microsoft-mssql-server?tab=description
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    #----------------------------
+    # descomente as linhas a seguir para conseguir conectar no seu banco
+    # se você descomentar, você conecta no seguinte host e porta:
+    # host: localhost    porta: 1555
+    #----------------------------
+    # ports:
+    #   - "1555:1433"
+    #----------------------------
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password#123"
+      MSSQL_PID: "Developer" # nao sei oq é isso, mas o default é Developer
+    #----------------------------
+    # esse volume ta dando erro de permissão, o container não inicia
+    # não sei pq
+    #----------------------------
+    # volumes:
+    #   - ../volumes/mssql-data:/var/opt/mssql/data
